@@ -7,7 +7,7 @@ public class ArrayDeque<T> {
     public int firstIdx;
     public int lastIdx;
     public static int RUFACTOR = 2;
-    public static int RDFACTOR = 1/2;
+    public static double RDFACTOR = 0.5;
 
     public ArrayDeque() {
         items = (T[]) new Object[8];
@@ -76,7 +76,7 @@ public class ArrayDeque<T> {
             return null;
         }
         if (items.length >= 16 && size < 0.25 * items.length) {
-            resize(size * RDFACTOR);
+            resize((int) Math.ceil(size * RDFACTOR));
             firstIdx = 0;
             lastIdx = size - 1;
         }
@@ -94,7 +94,7 @@ public class ArrayDeque<T> {
             return null;
         }
         if (items.length >= 16 && size < 0.25 * items.length) {
-            resize(size * RDFACTOR);
+            resize((int) Math.ceil(size * RDFACTOR));
             firstIdx = 0;
             lastIdx = size - 1;
         }
