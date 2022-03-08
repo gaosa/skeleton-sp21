@@ -13,41 +13,51 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[8];
         size = 0;
         firstIdx = 0;
-        lastIdx = 1;
+        lastIdx = 0;
     }
 
     private void resize(int capacity) {
-        T[] DequeCopy = (T[]) new Object[capacity];
+        T[] dequeCopy = (T[]) new Object[capacity];
         if (lastIdx >= firstIdx) {
-            System.arraycopy(items, firstIdx, DequeCopy, 0, lastIdx - firstIdx + 1);
+            System.arraycopy(items, firstIdx, dequeCopy, 0, lastIdx - firstIdx + 1);
         } else {
-            System.arraycopy(items, firstIdx, DequeCopy, 0, size - firstIdx);
-            System.arraycopy(items, 0, DequeCopy, size - firstIdx, lastIdx - 1);
+            System.arraycopy(items, firstIdx, dequeCopy, 0, items.length - firstIdx);
+            System.arraycopy(items, 0, dequeCopy, items.length - firstIdx, lastIdx + 1);
         }
-        items = DequeCopy;
+        items = dequeCopy;
+        firstIdx = 0;
+        lastIdx = size - 1;
+//        lastIdx = Math.max(0, size - 1);
+    }
+
+    private int mod(int idx) {
+        return (idx + items.length) % items.length;
     }
 
     /** Adds an item of type T to the front of the deque. You can assume that item is never null. */
     public void addFirst(T item) {
         if (size == items.length) {
-            resize(size * RUFACTOR);
-            firstIdx = 0;
-            lastIdx = size - 1;
+            resize(items.length * RUFACTOR);
         }
+        if (size > 0) {
+            firstIdx = mod(firstIdx - 1);
+        }
+        // firstIdx = firstIdx > 0 ? firstIdx - 1 : items.length - 1;
         items[firstIdx] = item;
-        firstIdx = firstIdx > 0 ? firstIdx - 1 : size - 1;
         size += 1;
     }
 
     /** Adds an item of type T to the back of the deque. You can assume that item is never null. */
     public void addLast(T item) {
         if (size == items.length) {
-            resize(size * RUFACTOR);
-            firstIdx = 0;
-            lastIdx = size - 1;
+            resize(items.length * RUFACTOR);
         }
+        if (size > 0) {
+            lastIdx = mod(lastIdx + 1);
+        }
+        // lastIdx = lastIdx < items.length - 1 ? lastIdx + 1 : 0;
+//        System.out.println("lastIdx: " + lastIdx);
         items[lastIdx] = item;
-        lastIdx = lastIdx < size - 1 ? lastIdx + 1 : 0;
         size += 1;
     }
 
@@ -63,7 +73,7 @@ public class ArrayDeque<T> {
 
     /** Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line. */
     public void printDeque() {
-        for (int i = 0; i < size; i += 1) {
+        for (int i = firstIdx, j = size; j > 0; i = mod(i + 1), j -= 1) {
             System.out.print(items[i]);
             System.out.print(" ");
         }
@@ -76,15 +86,15 @@ public class ArrayDeque<T> {
             return null;
         }
         if (items.length >= 16 && size < 0.25 * items.length) {
-            resize((int) Math.ceil(size * RDFACTOR));
-            firstIdx = 0;
-            lastIdx = size - 1;
+            resize((int) Math.ceil(items.length * RDFACTOR));
         }
         T first = items[firstIdx];
         items[firstIdx] = null;
-        firstIdx = firstIdx < size - 1 ? firstIdx + 1 : 0;
+        // firstIdx = firstIdx < size - 1 ? firstIdx + 1 : 0;
         size -= 1;
-
+        if (size > 0) {
+            firstIdx = mod(firstIdx + 1);
+        }
         return first;
     }
 
@@ -94,14 +104,17 @@ public class ArrayDeque<T> {
             return null;
         }
         if (items.length >= 16 && size < 0.25 * items.length) {
-            resize((int) Math.ceil(size * RDFACTOR));
-            firstIdx = 0;
-            lastIdx = size - 1;
+            resize((int) Math.ceil(items.length * RDFACTOR));
         }
         T last = items[lastIdx];
         items[lastIdx] = null;
-        lastIdx = lastIdx > 0 ? lastIdx - 1 : size - 1;
+        // lastIdx = lastIdx > 0 ? lastIdx - 1 : size - 1;
+//        System.out.println("lastIdx: " + lastIdx);
         size -= 1;
+        if (size > 0) {
+            lastIdx = mod(lastIdx - 1);
+        }
+//        System.out.println("lastIdx: " + lastIdx);
         return last;
     }
 
@@ -110,6 +123,7 @@ public class ArrayDeque<T> {
         if (index >= size) {
             return null;
         }
-        return items[index];
+        int idx = mod(firstIdx + index);
+        return items[idx];
     }
 }

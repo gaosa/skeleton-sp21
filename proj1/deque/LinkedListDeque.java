@@ -45,13 +45,11 @@ public class LinkedListDeque<T> {
 
     /** Returns true if deque is empty, false otherwise. */
     public boolean isEmpty() {
-        printDeque();
         return sentinel.next == sentinel;
     }
 
     /** Returns the number of items in the deque. */
     public int size() {
-        printDeque();
         return size;
     }
 

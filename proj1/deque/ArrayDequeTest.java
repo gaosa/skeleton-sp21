@@ -1,6 +1,12 @@
 package deque;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +23,7 @@ public class ArrayDequeTest {
 
         System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
 
-        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        ArrayDeque<String> lld1 = new ArrayDeque<>();
 
 		assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
 		lld1.addFirst("front");
@@ -44,7 +50,7 @@ public class ArrayDequeTest {
 
         System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
 
-        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
 		// should be empty
 		assertTrue("lld1 should be empty upon initialization", lld1.isEmpty());
 
@@ -86,9 +92,9 @@ public class ArrayDequeTest {
     public void multipleParamTest() {
 
 
-        ArrayDeque<String>  lld1 = new ArrayDeque<String>();
-        ArrayDeque<Double>  lld2 = new ArrayDeque<Double>();
-        ArrayDeque<Boolean> lld3 = new ArrayDeque<Boolean>();
+        ArrayDeque<String>  lld1 = new ArrayDeque<>();
+        ArrayDeque<Double>  lld2 = new ArrayDeque<>();
+        ArrayDeque<Boolean> lld3 = new ArrayDeque<>();
 
         lld1.addFirst("string");
         lld2.addFirst(3.14159);
@@ -106,7 +112,7 @@ public class ArrayDequeTest {
 
         System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
 
-        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
 
         boolean passed1 = false;
         boolean passed2 = false;
@@ -134,7 +140,70 @@ public class ArrayDequeTest {
         for (double i = 999999; i > 500000; i--) {
             assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
         }
+    }
 
+    @Test
+    public void randomizedTesting() {
+        // generate random numbers
+        Random random = new Random();
+        Deque<Integer> ref = new java.util.ArrayDeque<>();
+        LinkedListDeque<Integer> myLLDeque = new LinkedListDeque<>();
+        ArrayDeque<Integer> myADeque = new ArrayDeque<>();
 
+        for (int i = 0; i < 10000; i += 1) {
+            int rn = random.nextInt(4);
+            int v = random.nextInt();
+            switch (rn) {
+                case 0 -> { // test addLast
+                    System.out.println("addLast: " + v);
+                    ref.addLast(v);
+                    myLLDeque.addLast(v);
+                    myADeque.addLast(v);
+                }
+                case 1 -> { // test addFirst;
+                    System.out.println("addFirst: " + v);
+                    ref.addFirst(v);
+                    myLLDeque.addFirst(v);
+                    myADeque.addFirst(v);
+                }
+                case 2 -> { // test removeLast
+                    System.out.println("removeLast: ");
+                    Integer refLastItem = ref.pollLast();
+                    Integer myLLLastItem = myLLDeque.removeLast();
+                    Integer myALastItem = myADeque.removeLast();
+                    Assert.assertEquals("RemoveLast wrong in LinkedListDeque", refLastItem, myLLLastItem);
+                    Assert.assertEquals("RemoveLast wrong in ArrayDeque", refLastItem, myALastItem);
+                }
+                case 3 -> { // test removeFirst
+                    System.out.println("removeFirst: ");
+                    Integer refFirstItem = ref.pollFirst();
+                    Integer myLLFirstItem = myLLDeque.removeFirst();
+                    Integer myAFirstItem = myADeque.removeFirst();
+                    Assert.assertEquals("RemoveFirst wrong in LinkedListDeque", refFirstItem, myLLFirstItem);
+                    Assert.assertEquals("RemoveFirst wrong in ArrayDeque", refFirstItem, myAFirstItem);
+                }
+            }
+
+//            System.out.print("refDeque: ");
+//            for (int item : ref) {
+//                System.out.print(item + " ");
+//            }
+//            System.out.println();
+//            System.out.print("MyLinkedListDeque: ");
+//            myLLDeque.printDeque();
+//            System.out.print("MyArrayDeque: ");
+//            myADeque.printDeque();
+
+            int expectedSize =  ref.size();
+            int actualLLSize = myLLDeque.size();
+            int actualASize = myADeque.size();
+            Assert.assertEquals("size wrong in LinkedListDeque", expectedSize, actualLLSize);
+            Assert.assertEquals("size wrong in ArrayDeque", expectedSize, actualASize);
+
+//            for (int refItem : ref) {
+//                Assert.assertEquals(refItem, myLLDeque[i]);
+//                Assert.assertEquals(refItem, myADeque[i]);
+//            }
+        }
     }
 }
