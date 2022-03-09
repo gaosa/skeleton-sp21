@@ -17,10 +17,10 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        T maxItem = ArrayDeque.get(0);
+        T maxItem = get(0);
         for (int i = 1; i < size; i += 1) {
-            if (comparator.compare(ArrayDeque.get(i), maxItem) > 0) {
-                maxItem = ArrayDeque.get(i);
+            if (comparator.compare(get(i), maxItem) > 0) {
+                maxItem = get(i);
             }
         }
         return maxItem;
@@ -32,10 +32,10 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        T maxItem = ArrayDeque.get(0);
+        T maxItem = get(0);
         for (int i = 1; i < size; i += 1) {
-            if (c.compare(T ArrayDeque.get(i), maxItem) > 0) {
-                maxItem = ArrayDeque.get(i);
+            if (c.compare(get(i), maxItem) > 0) {
+                maxItem = get(i);
             }
         }
         return maxItem;
