@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class LinkedListDeque<T> implements Deque<T> {
 
     public static class LinkedListNode<T> {
@@ -109,4 +111,58 @@ public class LinkedListDeque<T> implements Deque<T> {
         return curr.item;
     }
 
+    /** The Deque objects we’ll make are iterable (i.e. Iterable<T>) so we must provide this method to return an iterator. */
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    public class LinkedListDequeIterator implements Iterator<T> {
+        private int wizPos;
+        private LinkedListDequeIterator() {
+            wizPos = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            LinkedListNode<T> curr = sentinel.next;
+            if (curr != sentinel) {
+                wizPos += 1;
+                curr = curr.next;
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public T next() {
+            LinkedListNode<T> curr = sentinel;
+            for (int i = 0; i <= wizPos; i += 1) {
+                curr = curr.next;
+            }
+            return curr.item;
+        }
+    }
+
+    /** Returns whether or not the parameter o is equal to the Deque.
+     * o is considered equal if it is a Deque and if it contains the same contents
+     * (as goverened by the generic T’s equals method) in the same order.
+     * (ADDED 2/12: You’ll need to use the instance of keywords for this.
+     * Read here for more information) */
+    public boolean equals(Object o) {
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        LinkedListDeque<T> oDeque = (LinkedListDeque<T>) o;
+        if (this.size != oDeque.size) {
+            return false;
+        }
+        Iterator<T> LLDequeSeer = this.iterator();
+        Iterator<T> oSeer = oDeque.iterator();
+        while (LLDequeSeer.hasNext()) {
+            if (!LLDequeSeer.next().equals(oSeer.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
