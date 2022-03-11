@@ -142,6 +142,7 @@ public class ArrayDequeTest {
         }
     }
 
+    // for both LinkedListDeque and ArrayDeque
     @Test
     public void randomizedTesting() {
         // generate random numbers
@@ -150,7 +151,7 @@ public class ArrayDequeTest {
         LinkedListDeque<Integer> myLLDeque = new LinkedListDeque<>();
         ArrayDeque<Integer> myADeque = new ArrayDeque<>();
 
-        for (int i = 0; i < 10000; i += 1) {
+        for (int i = 0; i < 20; i += 1) {
             int rn = random.nextInt(4);
             int v = random.nextInt();
             switch (rn) {
@@ -199,6 +200,12 @@ public class ArrayDequeTest {
             int actualASize = myADeque.size();
             Assert.assertEquals("size wrong in LinkedListDeque", expectedSize, actualLLSize);
             Assert.assertEquals("size wrong in ArrayDeque", expectedSize, actualASize);
+
+//            System.out.println(ref);
+//            myLLDeque.printDeque();
+//            myADeque.printDeque();
+            System.out.println("My LinkedListDeque compared to the reference deque: " + ref.equals(myLLDeque));
+            System.out.println("My ArrayDeque compared to the reference deque: " + ref.equals(myADeque));
 
 //            for (int refItem : ref) {
 //                Assert.assertEquals(refItem, myLLDeque[i]);

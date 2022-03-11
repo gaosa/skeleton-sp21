@@ -168,6 +168,9 @@ public class ArrayDeque<T> implements Deque<T> {
      * (ADDED 2/12: You’ll need to use the instance of keywords for this.
      * Read here for more information) */
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (!(o instanceof Deque)) {
             return false;
         }
