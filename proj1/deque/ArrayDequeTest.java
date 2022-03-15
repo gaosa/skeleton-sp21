@@ -155,34 +155,34 @@ public class ArrayDequeTest {
             int rn = random.nextInt(4);
             int v = random.nextInt();
             switch (rn) {
-                case 0 -> { // test addLast
+                case 0: // test addLast
                     System.out.println("addLast: " + v);
                     ref.addLast(v);
                     myLLDeque.addLast(v);
                     myADeque.addLast(v);
-                }
-                case 1 -> { // test addFirst;
+                    break;
+                case 1: // test addFirst;
                     System.out.println("addFirst: " + v);
                     ref.addFirst(v);
                     myLLDeque.addFirst(v);
                     myADeque.addFirst(v);
-                }
-                case 2 -> { // test removeLast
+                    break;
+                case 2: // test removeLast
                     System.out.println("removeLast: ");
                     Integer refLastItem = ref.pollLast();
                     Integer myLLLastItem = myLLDeque.removeLast();
                     Integer myALastItem = myADeque.removeLast();
                     Assert.assertEquals("RemoveLast wrong in LinkedListDeque", refLastItem, myLLLastItem);
                     Assert.assertEquals("RemoveLast wrong in ArrayDeque", refLastItem, myALastItem);
-                }
-                case 3 -> { // test removeFirst
+                    break;
+                case 3: // test removeFirst
                     System.out.println("removeFirst: ");
                     Integer refFirstItem = ref.pollFirst();
                     Integer myLLFirstItem = myLLDeque.removeFirst();
                     Integer myAFirstItem = myADeque.removeFirst();
                     Assert.assertEquals("RemoveFirst wrong in LinkedListDeque", refFirstItem, myLLFirstItem);
                     Assert.assertEquals("RemoveFirst wrong in ArrayDeque", refFirstItem, myAFirstItem);
-                }
+                    break;
             }
 
 //            System.out.print("refDeque: ");
@@ -204,8 +204,10 @@ public class ArrayDequeTest {
 //            System.out.println(ref);
 //            myLLDeque.printDeque();
 //            myADeque.printDeque();
-            System.out.println("My LinkedListDeque compared to the reference deque: " + ref.equals(myLLDeque));
-            System.out.println("My ArrayDeque compared to the reference deque: " + ref.equals(myADeque));
+            assertEquals(myLLDeque, ref);
+            assertEquals(myADeque, ref);
+//            System.out.println("My LinkedListDeque compared to the reference deque: " + myLLDeque.equals(ref));
+//            System.out.println("My ArrayDeque compared to the reference deque: " + myADeque.equals(ref));
 
 //            for (int refItem : ref) {
 //                Assert.assertEquals(refItem, myLLDeque[i]);

@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     public T[] items;
     public int size;
@@ -79,8 +79,8 @@ public class ArrayDeque<T> implements Deque<T> {
     /** Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line. */
     @Override
     public void printDeque() {
-        for (int i = firstIdx, j = size; j > 0; i = mod(i + 1), j -= 1) {
-            System.out.print(items[i]);
+        for (T item: this) {
+            System.out.print(item);
             System.out.print(" ");
         }
         System.out.println();
@@ -144,20 +144,18 @@ public class ArrayDeque<T> implements Deque<T> {
     public class ArrayDequeIterator implements Iterator<T> {
         private int wizPos;
         private ArrayDequeIterator() {
-            wizPos = firstIdx;
+            wizPos = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return wizPos != lastIdx;
+            return wizPos != size;
         }
 
         @Override
         public T next() {
-            T itemReturn = items[wizPos];
-            while (hasNext()) {
-                wizPos = mod(wizPos + 1);
-            }
+            T itemReturn = items[mod(firstIdx + wizPos)];
+            wizPos = mod(wizPos + 1);
             return itemReturn;
         }
     }
@@ -168,23 +166,6 @@ public class ArrayDeque<T> implements Deque<T> {
      * (ADDED 2/12: You’ll need to use the instance of keywords for this.
      * Read here for more information) */
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (!(o instanceof Deque)) {
-            return false;
-        }
-        ArrayDeque<T> oDeque =  (ArrayDeque<T>) o;
-        if (this.size != oDeque.size) {
-            return false;
-        }
-        Iterator<T> aDequeSeer = this.iterator();
-        Iterator<T> oSeer = oDeque.iterator();
-        while (aDequeSeer.hasNext()) {
-            if (!aDequeSeer.next().equals(oSeer.next())) {
-                return false;
-            }
-        }
-        return true;
+        return equals(this, o);
     }
 }

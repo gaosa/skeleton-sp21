@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T> {
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     public static class LinkedListNode<T> {
         // class variables of the LinkedListNode class
@@ -61,11 +61,9 @@ public class LinkedListDeque<T> implements Deque<T> {
     /** Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line. */
     @Override
     public void printDeque() {
-        LinkedListNode<T> curr = sentinel.next;
-        for (int i = 0; i < size; i += 1) {
-            System.out.print(curr.item);
+        for (T item: this) {
+            System.out.print(item);
             System.out.print(" ");
-            curr = curr.next;
         }
         System.out.println();
     }
@@ -117,29 +115,21 @@ public class LinkedListDeque<T> implements Deque<T> {
     }
 
     public class LinkedListDequeIterator implements Iterator<T> {
-        private int wizPos;
+        private LinkedListNode<T> curr;
         private LinkedListDequeIterator() {
-            wizPos = 0;
+            curr = sentinel.next;
         }
 
         @Override
         public boolean hasNext() {
-            LinkedListNode<T> curr = sentinel.next;
-            if (curr != sentinel) {
-                wizPos += 1;
-                curr = curr.next;
-                return true;
-            }
-            return false;
+            return curr != sentinel;
         }
 
         @Override
         public T next() {
-            LinkedListNode<T> curr = sentinel;
-            for (int i = 0; i <= wizPos; i += 1) {
-                curr = curr.next;
-            }
-            return curr.item;
+            T item = curr.item;
+            curr = curr.next;
+            return item;
         }
     }
 
@@ -149,23 +139,6 @@ public class LinkedListDeque<T> implements Deque<T> {
      * (ADDED 2/12: You’ll need to use the instance of keywords for this.
      * Read here for more information) */
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (!(o instanceof Deque)) {
-            return false;
-        }
-        LinkedListDeque<T> oDeque = (LinkedListDeque<T>) o;
-        if (this.size != oDeque.size) {
-            return false;
-        }
-        Iterator<T> LLDequeSeer = this.iterator();
-        Iterator<T> oSeer = oDeque.iterator();
-        while (LLDequeSeer.hasNext()) {
-            if (!LLDequeSeer.next().equals(oSeer.next())) {
-                return false;
-            }
-        }
-        return true;
+        return equals(this, o);
     }
 }
