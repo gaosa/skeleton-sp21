@@ -24,12 +24,13 @@ public class Main {
                 return;
             }
             Repository repository = Repository.load();
+            String filename;
             switch (firstArg) {
                 case "add":
                     if (args.length != 2) {
                         throw new GitletException("Incorrect operands.");
                     }
-                    String filename = args[1];
+                    filename = args[1];
                     repository.stage(filename);
                     break;
                 case "commit":
@@ -41,6 +42,16 @@ public class Main {
                         throw new GitletException("Please enter a commit message.");
                     }
                     repository.commit(message);
+                    break;
+                case "checkout":
+                    if (args.length != 3) {
+                        throw new GitletException("Incorrect operands.");
+                    }
+                    if (!args[1].equals("--")) {
+                        throw new GitletException("Incorrect operands.");
+                    }
+                    filename = args[2];
+                    repository.checkoutFile(filename);
                     break;
                 // TODO: FILL THE REST IN
                 default:

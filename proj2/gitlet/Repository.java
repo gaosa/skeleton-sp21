@@ -106,7 +106,7 @@ public class Repository implements Serializable {
         // do not stage
         if (!fileSha1.equals(latestCommit().sha1(filename))) {
             stagingAdd.put(filename, fileSha1);
-            Utils.writeObject(new File(GITLET_DIR, fileSha1), fileContent);
+            Utils.writeContents(new File(GITLET_DIR, fileSha1), fileContent);
         }
     }
 
@@ -130,5 +130,11 @@ public class Repository implements Serializable {
         // Clear staging area
         stagingRemove.clear();
         stagingAdd.clear();
+    }
+
+    public void checkoutFile(String filename) {
+        String sha1 = latestCommit().sha1(filename);
+        byte[] content = Utils.readContents(new File(GITLET_DIR, sha1));
+        Utils.writeContents(new File(CWD, filename), content);
     }
 }

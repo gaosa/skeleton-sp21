@@ -42,7 +42,7 @@ public class Commit implements Serializable {
         return files.get(file);
     }
 
-    // Create a commit with the chaning file set
+    // Create a commit with the changing file set
     public Commit commit(String message, Map<String, String> filesToAdd, Set<String> filesToRemove) {
         Map<String, String> newFiles = new HashMap<>(files);
         newFiles.putAll(filesToAdd);
