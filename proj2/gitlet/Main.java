@@ -15,26 +15,38 @@ public class Main {
         }
         try {
             String firstArg = args[0];
+            // Move it out of switch because this is a special case
+            if (firstArg.equals("init")) {
+                if (args.length > 1) {
+                    throw new GitletException("Incorrect operands.");
+                }
+                Repository.init();
+                return;
+            }
+            Repository repository = Repository.load();
             switch (firstArg) {
-                case "init":
-                    if (args.length > 1) {
-                        throw new GitletException("Incorrect operands.");
-                    }
-                    Repository.init();
-                    break;
                 case "add":
                     if (args.length != 2) {
                         throw new GitletException("Incorrect operands.");
                     }
                     String filename = args[1];
-                    Repository repository = Repository.load();
                     repository.stage(filename);
-                    repository.save();
+                    break;
+                case "commit":
+                    if (args.length != 2) {
+                        throw new GitletException("Incorrect operands.");
+                    }
+                    String message = args[1];
+                    if (message.isBlank()) {
+                        throw new GitletException("Please enter a commit message.");
+                    }
+                    repository.commit(message);
                     break;
                 // TODO: FILL THE REST IN
                 default:
                     throw new GitletException("No command with that name exists.");
             }
+            repository.save();
         } catch (GitletException e) {
             System.out.println(e.getMessage());
         }

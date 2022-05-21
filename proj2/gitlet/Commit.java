@@ -4,7 +4,9 @@ package gitlet;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -38,5 +40,13 @@ public class Commit implements Serializable {
     // sha1 for file in the current commit
     public String sha1(String file) {
         return files.get(file);
+    }
+
+    // Create a commit with the chaning file set
+    public Commit commit(String message, Map<String, String> filesToAdd, Set<String> filesToRemove) {
+        Map<String, String> newFiles = new HashMap<>(files);
+        newFiles.putAll(filesToAdd);
+        filesToRemove.forEach(newFiles::remove);
+        return new Commit(message, new Date(), newFiles);
     }
 }
