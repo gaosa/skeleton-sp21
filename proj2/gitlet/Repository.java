@@ -2,8 +2,8 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static gitlet.Utils.*;
@@ -29,10 +29,16 @@ public class Repository implements Serializable {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
+    // File that stores metadata
+    public static final File METADATA_FILE = join(CWD, ".gitlet", "metadata");
     // All the branches
     // Key is branch name, value is sha1 of commit
     private Map<String, String> branches;
     private String currentBranch;
+
+    // Staging area, key is filename, value is sha1
+    private Map<String, String> stagingAdd;
+    private Map<String, String> stagingRemove;
 
     /* TODO: fill in the rest of this class. */
     public static void init() throws GitletException {
@@ -45,23 +51,54 @@ public class Repository implements Serializable {
 
         // Create and save the initial commit
         // new Date(0) is the time 0
-        Commit initialCommit = new Commit("initial commit", new Date(0));
-        byte[] content = Utils.serialize(initialCommit);
-        String sha1 = Utils.sha1(content);
-        Utils.writeObject(new File(GITLET_DIR, sha1), content);
+        Commit initialCommit = new Commit("initial commit", new Date(0), new HashMap<>());
+        String sha1 = Utils.sha1(Utils.serialize(initialCommit));
+        Utils.writeObject(new File(GITLET_DIR, sha1), initialCommit);
 
         // Save metadata (branches, current branch)
-        new Repository(Collections.singletonMap("master", sha1), "master").save();
+        Map<String, String> branches = new HashMap<>();
+        branches.put("master", sha1);
+        new Repository(branches, "master").save();
+    }
+
+    public static Repository load() throws GitletException {
+        if (!METADATA_FILE.isFile()) {
+            throw new GitletException("Not in an initialized Gitlet directory.");
+        }
+        return Utils.readObject(METADATA_FILE, Repository.class);
     }
 
     // This is private because only init() called this function
     private Repository(Map<String, String> branches, String currentBranch) {
         this.branches = branches;
         this.currentBranch = currentBranch;
+        this.stagingAdd = new HashMap<>();
+        this.stagingRemove = new HashMap<>();
     }
 
     // Save metadata (branches, current branch)
     public void save() {
-        Utils.writeObject(new File(GITLET_DIR, "metadata"), Utils.serialize(this));
+        Utils.writeObject(METADATA_FILE, this);
+    }
+
+    public void stage(String filename) throws GitletException {
+        File file = new File(CWD, filename);
+        if (!file.exists()) {
+            throw new GitletException("File does not exist.");
+        }
+        // If this file is already in the staging area, remove it
+        stagingRemove.remove(filename);
+        stagingAdd.remove(filename);
+
+        byte[] fileContent = Utils.readContents(file);
+        String fileSha1 = Utils.sha1(fileContent);
+        String commitSha1 = branches.get(currentBranch);
+        Commit commit = Utils.readObject(new File(GITLET_DIR, commitSha1), Commit.class);
+        // If the current working version of the file is identical to the version in the current commit
+        // do not stage
+        if (!fileSha1.equals(commit.sha1(filename))) {
+            stagingAdd.put(filename, fileSha1);
+            Utils.writeObject(new File(GITLET_DIR, fileSha1), fileContent);
+        }
     }
 }

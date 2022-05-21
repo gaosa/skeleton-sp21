@@ -23,7 +23,13 @@ public class Main {
                     Repository.init();
                     break;
                 case "add":
-                    // TODO: handle the `add [filename]` command
+                    if (args.length != 2) {
+                        throw new GitletException("Incorrect operands.");
+                    }
+                    String filename = args[1];
+                    Repository repository = Repository.load();
+                    repository.stage(filename);
+                    repository.save();
                     break;
                 // TODO: FILL THE REST IN
                 default:
