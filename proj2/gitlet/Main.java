@@ -9,16 +9,28 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
-        String firstArg = args[0];
-        switch(firstArg) {
-            case "init":
-                // TODO: handle the `init` command
-                break;
-            case "add":
-                // TODO: handle the `add [filename]` command
-                break;
-            // TODO: FILL THE REST IN
+        if (args.length == 0) {
+            System.out.println("Please enter a command.");
+            return;
+        }
+        try {
+            String firstArg = args[0];
+            switch (firstArg) {
+                case "init":
+                    if (args.length > 1) {
+                        throw new GitletException("Incorrect operands.");
+                    }
+                    Repository.init();
+                    break;
+                case "add":
+                    // TODO: handle the `add [filename]` command
+                    break;
+                // TODO: FILL THE REST IN
+                default:
+                    throw new GitletException("No command with that name exists.");
+            }
+        } catch (GitletException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

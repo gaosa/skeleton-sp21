@@ -26,4 +26,12 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /* TODO: fill in the rest of this class. */
+    public static void init() throws GitletException {
+        if (GITLET_DIR.exists()) {
+            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
+        }
+        if (!GITLET_DIR.mkdir()) {
+            throw new GitletException("Cannot init Gitlet.");
+        }
+    }
 }
