@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
+import static gitlet.Repository.GITLET_DIR;
+
 
 /** Assorted utilities.
  *
@@ -155,6 +157,16 @@ class Utils {
     /** Write OBJ to FILE. */
     static void writeObject(File file, Serializable obj) {
         writeContents(file, serialize(obj));
+    }
+
+    static String writeObjectIfNotExists(Serializable obj) {
+        byte[] content = serialize(obj);
+        String sha1 = sha1(content);
+        File file = join(GITLET_DIR, sha1);
+        if (!file.exists()) {
+            writeContents(file, content);
+        }
+        return sha1;
     }
 
     /* DIRECTORIES */
