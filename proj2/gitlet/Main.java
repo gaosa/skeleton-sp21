@@ -38,6 +38,12 @@ public class Main {
                     }
                     repository.rm(args[1]);
                     break;
+                case "commit":
+                    if (args.length != 2) {
+                        throw new GitletException("Incorrect operands");
+                    }
+                    repository.commit(args[1]);
+                    break;
                 // TODO: FILL THE REST IN
                 default:
                     throw new GitletException("No command with that name exists.");

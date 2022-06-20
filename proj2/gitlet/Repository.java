@@ -56,7 +56,7 @@ public class Repository implements Serializable {
         String curBranch = "master";
         Map<String, String> branches = new HashMap<>();
         branches.put(curBranch, sha1);
-        writeObject(GITLET_META, new Repository(branches, curBranch));
+        new Repository(branches, curBranch).save();
     }
 
     public static Repository load() {
@@ -65,6 +65,10 @@ public class Repository implements Serializable {
         } catch (Exception e) {
             throw new GitletException("Not in an initialized Gitlet directory.");
         }
+    }
+
+    public void save() {
+        writeObject(GITLET_META, this);
     }
 
     public void add(String filename) {
@@ -91,6 +95,7 @@ public class Repository implements Serializable {
             stagingAdd.put(filename, sha1);
             writeObjectIfNotExists(content);
         }
+        save();
     }
 
     public void rm(String filename) {
@@ -99,8 +104,6 @@ public class Repository implements Serializable {
             throw new GitletException("File does not exist.");
         }
         Commit commit = readObject(branches.get(curBranch), Commit.class);
-        byte[] content = readContents(file);
-        String sha1 = sha1(content);
         if (!stagingAdd.containsKey(filename)
                 && !stagingRemove.contains(filename)
                 && commit.get(filename) == null) {
@@ -114,5 +117,23 @@ public class Repository implements Serializable {
             stagingRemove.add(filename);
             restrictedDelete(file);
         }
+        save();
+    }
+
+    public void commit(String message) {
+        if (stagingAdd.isEmpty() && stagingRemove.isEmpty()) {
+            throw new GitletException("No changes added to the commit.");
+        }
+        if (message.isBlank()) {
+            throw new GitletException("Please enter a commit message.");
+        }
+        String curSha1 = branches.get(curBranch);
+        Commit curCommit = readObject(curSha1, Commit.class);
+        Commit newCommit = new Commit(message, new Date(), curSha1, curCommit.newFiles(stagingAdd, stagingRemove));
+        String newSha1 = writeObjectIfNotExists(newCommit);
+        stagingRemove.clear();
+        stagingAdd.clear();
+        branches.put(curBranch, newSha1);
+        save();
     }
 }
