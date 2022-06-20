@@ -4,10 +4,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
-import java.util.Set;
-
-import static gitlet.Repository.*;
-import static gitlet.Utils.*;
+import java.util.Map;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -28,12 +25,16 @@ public class Commit implements Serializable {
     private String message;
     private Date date;
     private String prev;
-    private Set<String> files;
+    private Map<String, String> files;
 
-    public Commit(String message, Date date, String prev, Set<String> files) {
+    public Commit(String message, Date date, String prev, Map<String, String> files) {
         this.message = message;
         this.date = date;
         this.prev = prev;
         this.files = files;
+    }
+
+    public String get(String filename) {
+        return files.get(filename);
     }
 }

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
+import static gitlet.Repository.CWD;
 import static gitlet.Repository.GITLET_DIR;
 
 
@@ -152,6 +153,11 @@ class Utils {
                  | ClassNotFoundException excp) {
             throw new IllegalArgumentException(excp.getMessage());
         }
+    }
+
+    static <T extends Serializable> T readObject(String sha1,
+                                                 Class<T> expectedClass) {
+        return readObject(join(GITLET_DIR, sha1), expectedClass);
     }
 
     /** Write OBJ to FILE. */

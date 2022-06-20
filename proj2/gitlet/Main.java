@@ -1,5 +1,7 @@
 package gitlet;
 
+import static gitlet.Utils.readObject;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -14,15 +16,27 @@ public class Main {
                 throw new GitletException("Please enter a command.");
             }
             String firstArg = args[0];
+            if (firstArg.equals("init")) {
+                if (args.length != 1) {
+                    throw new GitletException("Incorrect operands");
+                }
+                Repository.init();
+                return;
+            }
+            Repository repository = Repository.load();
+            String secondArg;
             switch (firstArg) {
-                case "init":
-                    if (args.length != 1) {
+                case "add":
+                    if (args.length != 2) {
                         throw new GitletException("Incorrect operands");
                     }
-                    Repository.init();
+                    repository.add(args[1]);
                     break;
-                case "add":
-                    // TODO: handle the `add [filename]` command
+                case "rm":
+                    if (args.length != 2) {
+                        throw new GitletException("Incorrect operands");
+                    }
+                    repository.rm(args[1]);
                     break;
                 // TODO: FILL THE REST IN
                 default:

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static gitlet.Utils.*;
 
@@ -33,10 +34,14 @@ public class Repository implements Serializable {
     public static final File GITLET_META = join(GITLET_DIR, "meta");
     private Map<String, String> branches;
     private String curBranch;
+    private Map<String, String> stagingAdd;
+    private Set<String> stagingRemove;
 
     private Repository(Map<String, String> branches, String curBranch) {
         this.branches = branches;
         this.curBranch = curBranch;
+        this.stagingAdd = new HashMap<>();
+        this.stagingRemove = new HashSet<>();
     }
 
     public static void init() {
@@ -46,11 +51,68 @@ public class Repository implements Serializable {
         if (!GITLET_DIR.mkdir()) {
             throw new GitletException("Cannot create .gitlet dir");
         }
-        Commit initialCommit = new Commit("initial commit", new Date(0), null, new HashSet<>());
+        Commit initialCommit = new Commit("initial commit", new Date(0), null, new HashMap<>());
         String sha1 = writeObjectIfNotExists(initialCommit);
         String curBranch = "master";
         Map<String, String> branches = new HashMap<>();
         branches.put(curBranch, sha1);
         writeObject(GITLET_META, new Repository(branches, curBranch));
+    }
+
+    public static Repository load() {
+        try {
+            return readObject(GITLET_META, Repository.class);
+        } catch (Exception e) {
+            throw new GitletException("Not in an initialized Gitlet directory.");
+        }
+    }
+
+    public void add(String filename) {
+        File file = join(CWD, filename);
+        if (!file.exists()) {
+            throw new GitletException("File does not exist.");
+        }
+        Commit commit = readObject(branches.get(curBranch), Commit.class);
+        byte[] content = readContents(file);
+        String sha1 = sha1(content);
+        // If the current working version of the file is identical
+        // to the version in the current commit,
+        // do not stage it to be added,
+        // and remove it from the staging area if it is already there
+        if (sha1.equals(commit.get(filename))) {
+            stagingAdd.remove(filename);
+            stagingRemove.remove(filename);
+        } else if (stagingRemove.contains(filename)) {
+            // The file will no longer be staged for removal
+            stagingRemove.remove(filename);
+        } else {
+            // Staging an already-staged file overwrites
+            // the previous entry in the staging area with the new contents.
+            stagingAdd.put(filename, sha1);
+            writeObjectIfNotExists(content);
+        }
+    }
+
+    public void rm(String filename) {
+        File file = join(CWD, filename);
+        if (!file.exists()) {
+            throw new GitletException("File does not exist.");
+        }
+        Commit commit = readObject(branches.get(curBranch), Commit.class);
+        byte[] content = readContents(file);
+        String sha1 = sha1(content);
+        if (!stagingAdd.containsKey(filename)
+                && !stagingRemove.contains(filename)
+                && commit.get(filename) == null) {
+            throw new GitletException("No reason to remove the file.");
+        }
+        // Unstage the file if it is currently staged for addition.
+        stagingAdd.remove(filename);
+        // If the file is tracked in the current commit,
+        // stage it for removal and remove the file from the working directory
+        if (!stagingRemove.contains(filename) && commit.get(filename) != null) {
+            stagingRemove.add(filename);
+            restrictedDelete(file);
+        }
     }
 }
